@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+// Para que no se detenga el script si tarda mucho en ejecutar un comando.
+set_time_limit(0);
+
+
+require __DIR__ . '/../vendor/autoload.php';
+use Tools\Application;
+
+$application = new Application();
+$application->run();
+
