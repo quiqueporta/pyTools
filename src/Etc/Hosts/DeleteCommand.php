@@ -10,16 +10,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
 
-class AddCommand extends Command
+class DeleteCommand extends Command
 {
 
     protected function configure()
     {
         $this
-            ->setName('etc:hosts:add')
-            ->setDescription('añade una entrada en el archivos hosts')
+            ->setName('etc:hosts:del')
+            ->setDescription('elimina una entrada en el archivo hosts')
             ->addArgument('hostname', null, InputArgument::REQUIRED, 'pruebas.local')
-            ->addOption('ip', null, InputOption::VALUE_REQUIRED, "Direccion IP, ejempplo 127.0.0.1", '127.0.0.1')
             ->addOption('hosts-file', null, InputOption::VALUE_REQUIRED, 'Ubicacion del archivo hosts', '/etc/hosts')
             ;
     }
@@ -42,12 +41,6 @@ class AddCommand extends Command
 
         $input->setArgument('hostname', $hostname);
 
-        do
-            {
-                $ip = $this->getDialog()->ask($output, sprintf('<question>IP</question> (defecto: %s): ', $input->getOption('ip')), $input->getOption('ip'));
-            }
-        while (!$ip);
-        $input->setOption('ip', $ip);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -57,7 +50,7 @@ class AddCommand extends Command
             throw new LogicException('Debe especificar un nombre para el hostname.');
         }
 
-        $process = new Process(sprintf('echo "%s %s" | sudo tee --append %s', $input->getOption('ip'), $input->getArgument('hostname'), $input->getOption('hosts-file')));
+        $process = new Process(sprintf('sudo sed "/%s/d" %s', $input->getArgument('hostname'), $input->getOption('hosts-file')));
         $process->run(function($type, $buffer) use($output) {$output->writeln($buffer);});
     }
 
