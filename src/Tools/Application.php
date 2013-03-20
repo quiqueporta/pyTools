@@ -10,6 +10,7 @@ class Application extends BaseApplication
     {
         parent::__construct('PyndooTools', '0.1');
         $this->add(new \Apache\AddCommand());
+        $this->add(new \Etc\Hosts\AddCommand());
     }
 
 }
