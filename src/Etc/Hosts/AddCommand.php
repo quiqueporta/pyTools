@@ -17,8 +17,8 @@ class AddCommand extends Command
     {
         $this
             ->setName('etc:hosts:add')
-            ->setDescription('añade una entrada en el archivos hosts')
-            ->addArgument('hostname', null, InputArgument::REQUIRED, 'pruebas.local')
+            ->setDescription('Añade una entrada en el archivos hosts')
+            ->addArgument('hostname', InputArgument::REQUIRED, 'El hostname que se quiere agregar, ejemplo pruebas.local')
             ->addOption('ip', null, InputOption::VALUE_REQUIRED, "Direccion IP, ejempplo 127.0.0.1", '127.0.0.1')
             ->addOption('hosts-file', null, InputOption::VALUE_REQUIRED, 'Ubicacion del archivo hosts', '/etc/hosts')
             ;
@@ -32,33 +32,22 @@ class AddCommand extends Command
         }
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
-    {
-        do
-        {
-            $hostname = $this->getDialog()->ask($output, sprintf('<question>Hostname</question> (defecto: %s): ', $input->getArgument('hostname')), $input->getArgument('hostname'));
-        }
-        while (!$hostname);
-
-        $input->setArgument('hostname', $hostname);
-
-        do
-            {
-                $ip = $this->getDialog()->ask($output, sprintf('<question>IP</question> (defecto: %s): ', $input->getOption('ip')), $input->getOption('ip'));
-            }
-        while (!$ip);
-        $input->setOption('ip', $ip);
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (null === $input->getArgument('hostname'))
-        {
-            throw new LogicException('Debe especificar un nombre para el hostname.');
-        }
+        do
+            {
+                $ip = $this->getDialog()->ask($output, sprintf('<question>¿Cual es la dirección IP?</question> (defecto: %s): ', $input->getOption('ip')), $input->getOption('ip'));
+            }
+        while (!$ip);
+
+        $input->setOption('ip', $ip);
 
         $process = new Process(sprintf('echo "%s %s" | sudo tee --append %s', $input->getOption('ip'), $input->getArgument('hostname'), $input->getOption('hosts-file')));
+
         $process->run(function($type, $buffer) use($output) {$output->writeln($buffer);});
+        $output->writeln(sprintf('<info>Añadida la entrada %s %s al archivo %s</info>', $input->getOption('ip'), $input->getArgument('hostname'), $input->getOption('hosts-file')));
+
+
     }
 
     protected function getDialog()

@@ -18,7 +18,7 @@ class DeleteCommand extends Command
         $this
             ->setName('etc:hosts:del')
             ->setDescription('elimina una entrada en el archivo hosts')
-            ->addArgument('hostname', null, InputArgument::REQUIRED, 'pruebas.local')
+            ->addArgument('hostname', InputArgument::REQUIRED, 'Nombre del hostname que se desea eliminar')
             ->addOption('hosts-file', null, InputOption::VALUE_REQUIRED, 'Ubicacion del archivo hosts', '/etc/hosts')
             ;
     }
@@ -31,27 +31,14 @@ class DeleteCommand extends Command
         }
     }
 
-    protected function interact(InputInterface $input, OutputInterface $output)
-    {
-        do
-        {
-            $hostname = $this->getDialog()->ask($output, sprintf('<question>Hostname</question> (defecto: %s): ', $input->getArgument('hostname')), $input->getArgument('hostname'));
-        }
-        while (!$hostname);
-
-        $input->setArgument('hostname', $hostname);
-
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (null === $input->getArgument('hostname'))
-        {
-            throw new LogicException('Debe especificar un nombre para el hostname.');
-        }
 
-        $process = new Process(sprintf('sudo sed "/%s/d" %s', $input->getArgument('hostname'), $input->getOption('hosts-file')));
-        $process->run(function($type, $buffer) use($output) {$output->writeln($buffer);});
+        if ($this->getDialog()->askConfirmation($output, sprintf('<question>¿Deseas realmente eliminar la entrada de hosts (%s)?. (defecto: y)</question> ', $input->getArgument('hostname')), true)){
+            $process = new Process(sprintf('sudo sed --in-place "/%s/d" %s', $input->getArgument('hostname'), $input->getOption('hosts-file')));
+            $process->run(function($type, $buffer) use($output) {$output->writeln($buffer);});
+            $output->writeln(sprintf('<info>Eliminada la entrada %s</info>', $input->getArgument('hostname')));
+        }
     }
 
     protected function getDialog()
