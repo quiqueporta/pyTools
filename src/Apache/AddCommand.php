@@ -77,6 +77,17 @@ EOF;
             $process->run(function($type, $buffer) use($output) {$output->writeln($buffer);});
 
         }
+
+        if ($this->getDialog()->askConfirmation($output, '<question>¿Quieres crear una entrada en el archivo hosts? (defecto: y)</question> ', true)){
+            $command = $this->getApplication()->find('etc:hosts:add');
+            $arguments = array(
+                'command' => 'etc:hosts:add',
+                'hostname' => $ServerName,
+            );
+            $input_hosts = new ArrayInput($arguments);
+            $command->run($input_hosts, $output);
+        }
+
     }
 
     protected function getDialog() {
