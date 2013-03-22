@@ -30,5 +30,5 @@ Tareas
 Ejemplos
 --------
 
-    pytool apache:vhost:add midominio.local
+    pytools apache:vhost:add midominio.local
 
