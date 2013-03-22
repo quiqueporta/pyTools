@@ -11,14 +11,14 @@ Instalación
     cd pyTools
     curl -s http://getcomposer.org/installer | php
     ./composer.phar install
-    sudo ln -s $HOME/pyTools/pytools /usr/bin/pytools
+    sudo ln -s $HOME/pyTools/bin/pytools /usr/bin/pytools
     sudo ln -s $HOME/pyTools/pytools-autocomplete.sh /etc/bash_completion.d/pytools-autocomplete.sh
     
 
 Ejecución
 ---------
 
-    pytools tareas [opciones] 
+    pytools tarea [opciones] 
 
 Tareas
 ------
@@ -30,5 +30,5 @@ Tareas
 Ejemplos
 --------
 
-pytool apache:vhost:add midominio.local
+    pytool apache:vhost:add midominio.local
 
