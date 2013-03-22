@@ -16,18 +16,15 @@ class AddCommand extends Command {
         $this
             ->setName('apache:vhost:add')
             ->setDescription('Crea un nuevo archivo de VirtualHost')
-            ->addArgument('ServerName', InputArgument::OPTIONAL, 'ServerName (ejemplo: ejemplo.local)')
+            ->addArgument('ServerName', InputArgument::REQUIRED, 'ServerName (ejemplo: ejemplo.local)')
             ->addOption('DocumentRoot', null, InputOption::VALUE_OPTIONAL, 'DocumentRoot (ejemplo: /var/www/mi_web)')
             ->addOption('DirectoryIndex', null, InputOption::VALUE_OPTIONAL, 'DirectoryIndex (ejemplo: index.php)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        // Se ejecuta hasta que no devuelvan un valor si no lo pasaron como parametro.
-        if (!$ServerName = $input->getArgument('ServerName')){
-            do {
-                $ServerName = $this->getDialog()->ask($output, '<question>ServerName (ejemplo: ejemplo.local)</question> ');
-            } while (!$ServerName);
-        }
+        $output->writeln(sprintf('<info>Creando un vhost para el dominio: %s</info>', $input->getArgument('ServerName')));
+
+        $ServerName = $input->getArgument('ServerName');
 
         if (!$DocumentRoot = $input->getOption('DocumentRoot')){
             $DocumentRoot = $this->getDialog()->ask($output, sprintf('<question>DocumentRoot (defecto: %s)</question> ',getcwd()), getcwd());
