@@ -14,6 +14,11 @@ Instalación
     sudo ln -s $HOME/pyTools/bin/pytools /usr/bin/pytools
     sudo ln -s $HOME/pyTools/pytools-autocomplete.sh /etc/bash_completion.d/pytools-autocomplete.sh
     
+Configuración
+-------------
+
+Se deben configurar las opciones del archivo
+   config/pytools.yml 
 
 Ejecución
 ---------
@@ -24,11 +29,8 @@ Tareas
 ------
 
 * apache:vhost:add
+* apache:vhost:del
 * etc:hosts:add
 * etc:hosts:del
-
-Ejemplos
---------
-
-    pytools apache:vhost:add midominio.local
+* svn:add
 
