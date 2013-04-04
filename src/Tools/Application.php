@@ -13,6 +13,7 @@ class Application extends BaseApplication
         $this->add(new \Apache\DeleteCommand());
         $this->add(new \Etc\Hosts\AddCommand());
         $this->add(new \Etc\Hosts\DeleteCommand());
+        $this->add(new \Symfony\v1\CreateProjectCommand());
     }
 
 }
