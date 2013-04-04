@@ -1,4 +1,8 @@
 ssh:
-  servername:
+  servername: 
   username:
   port:
+  remote_svn_script: 
+
+svn:
+  repository_url:
