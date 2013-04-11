@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Yaml;
 
 
 class CreateProjectCommand extends Command {
@@ -18,26 +19,68 @@ class CreateProjectCommand extends Command {
             ->setName('symfony1:project:create')
             ->setDescription('Crea un nuevo projecto de Symfony 1.x')
             ->addArgument('ProjectName', InputArgument::REQUIRED, 'ProjectName (ejemplo: MiProyecto)')
-            ->addOption('with-backend', null, InputOption::VALUE_NONE, 'Si se establece, se creará la aplicación backend.')
-            ->addOption('symfony-lib-dir', null, InputOption::VALUE_OPTIONAL, 'Indica donde se encuentra la libreria de Symfony 1.x.');
+            ->addOption('base-project-tag', null, InputOption::VALUE_OPTIONAL, 'Indica la versión del royecto base que se quiere obtener (ejemplo: --base-project-tag=2_1)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
 
-        # Comprobamos que la libreria se encuentra en la ubicación indicada por el usuario o por defecto.
+        $ProjectName = $input->getArgument('ProjectName');
+        $output->writeln(sprintf('<info>Creando el proyecto "%s" en Symfony 1.x</info>', $ProjectName ));
 
-        if (!$SymfonyLibDir = $input->getOption('symfony-lib-dir')){
-            $SymfonyLibDir = $this->getDialog()->ask($output, sprintf('<question>¿Donde está ubicada la libreria de Symfony 1.x? (defecto: %s)</question> ','/usr/lib/symfony/1.4.20/'), '/usr/lib/symfony/1.4.20/');
-        }
+        $existe_el_directorio = false;
 
-        
-        if (!is_file($SymfonyLibDir.'data/bin/symfony'))
+        do {
+            $ProjectDirectory = $this->getDialog()->ask($output, sprintf('<question>Directorio donde deseas crear el proyecto (%s):</question> ',getcwd()), getcwd());
+
+            $existe_el_directorio = file_exists($ProjectDirectory);
+
+            if (!$existe_el_directorio) {
+                $output->writeln(sprintf('<error>No existe el directorio %s</error>', $ProjectDirectory ));
+            }
+
+        } 
+        while (!$existe_el_directorio);
+
+        $tag = "aaa";
+
+        if (!file_exists(dirname(__FILE__).'/../../../config/pytools.yml'))
         {
-            throw new LogicException(sprintf('No se puede encontrar el archivo "%s"', $input->getOption('hosts-file')));
+            $output->writeln(sprintf('<error>No se encontró el archivo %s</error>', dirname(__FILE__).'/../../config/pytools.yml'));
+            exit();
         }
-        
 
-        $output->writeln(sprintf('<info>Creando el proyecto %s en Symfony 1.x</info>', $input->getArgument('ServerName')));
+        try {
+
+                $config = Yaml::parse(file_get_contents(dirname(__FILE__).'/../../../config/pytools.yml'));
+                
+                $process = new Process(sprintf('svn ls %s/%s/tags | sort -r | head -1', $config['svn']['repository_url'], $config['symfony_1']['base_project']));
+                $process->run($tag = function($type, $buffer) use (&$tag) {
+                    $tag = trim($buffer);
+                });
+
+        } catch (ParseException $e) {
+            $output->writeln(sprintf('<error>Imposible parsear el archivo YAML de configuración: %s</error>', $e->getMessage()));
+            exit();
+        }
+
+        if (!$BaseProjectTag = $input->getOption('base-project-tag')){
+            $BaseProjectTag = $this->getDialog()->ask($output, sprintf('<question>Tag del Proyecto Base (ultimo tag: %s)</question> ',$tag), $tag);
+        }
+
+        $output->writeln('<comment>* Importando el proyecto desde svn ...</comment>');
+        $process = new Process(sprintf('svn export %s/%s/tags/%s . --force',$config['svn']['repository_url'], $config['symfony_1']['base_project'], $BaseProjectTag));
+        $process->run();
+
+        $output->writeln('<comment>* Configurando el proyecto ...</comment>');
+        $process = new Process(sprintf('sed --in-place "s/mi_proyecto/%s/" config/properties.ini', $ProjectName));
+        $process->run();
+        
+        $process = new Process(sprintf('sed --in-place "s/mi_proyecto/%s/" config/databases.yml', $ProjectName));
+        $process->run();
+
+        $process = new Process(sprintf('sed --in-place "s/mi_proyecto/%s/" config/app.yml', $ProjectName));
+        $process->run();
+
     }
 
     protected function getDialog() {

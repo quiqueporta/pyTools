@@ -6,3 +6,6 @@ ssh:
 
 svn:
   repository_url:
+
+symfony_1:
+  base_project: 
