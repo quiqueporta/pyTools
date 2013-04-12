@@ -8,7 +8,7 @@ class Application extends BaseApplication
 {
     public function __construct()
     {
-        parent::__construct('PyndooTools', '0.3');
+        parent::__construct('PyndooTools', '0.4');
         $this->add(new \Apache\AddCommand());
         $this->add(new \Apache\DeleteCommand());
         $this->add(new \Etc\Hosts\AddCommand());
