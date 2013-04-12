@@ -75,6 +75,13 @@ class CreateProjectCommand extends Command {
         $process = new Process(sprintf('find . -type f -exec sed -i "s/mi_proyecto/%s/g" {} \;', $ProjectName));
         $process->run();
 
+        $output->writeln('<comment>* Generando los assets del proyecto ...</comment>');
+        $process = new Process(sprintf('./symfony plugin:publish-assets', $ProjectName));
+        $process->run();
+
+        $output->writeln('<comment>* Limpiando la cache ...</comment>');
+        $process = new Process(sprintf('./symfony cc', $ProjectName));
+        $process->run();
     }
 
     protected function getDialog() {
