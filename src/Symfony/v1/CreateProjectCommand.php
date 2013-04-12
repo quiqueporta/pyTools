@@ -82,6 +82,10 @@ class CreateProjectCommand extends Command {
         $output->writeln('<comment>* Limpiando la cache ...</comment>');
         $process = new Process(sprintf('./symfony cc', $ProjectName));
         $process->run();
+
+        $output->writeln('<comment>* Estableciendo permisos ...</comment>');
+        $process = new Process(sprintf('./symfony project:permissions', $ProjectName));
+        $process->run();
     }
 
     protected function getDialog() {
