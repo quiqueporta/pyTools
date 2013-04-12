@@ -72,13 +72,7 @@ class CreateProjectCommand extends Command {
         $process->run();
 
         $output->writeln('<comment>* Configurando el proyecto ...</comment>');
-        $process = new Process(sprintf('sed --in-place "s/mi_proyecto/%s/" config/properties.ini', $ProjectName));
-        $process->run();
-        
-        $process = new Process(sprintf('sed --in-place "s/mi_proyecto/%s/" config/databases.yml', $ProjectName));
-        $process->run();
-
-        $process = new Process(sprintf('sed --in-place "s/mi_proyecto/%s/" config/app.yml', $ProjectName));
+        $process = new Process(sprintf('find . -type f -exec sed -i "s/mi_proyecto/%s/g" {} \;', $ProjectName));
         $process->run();
 
     }
