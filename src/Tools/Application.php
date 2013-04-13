@@ -16,6 +16,7 @@ class Application extends BaseApplication
         $this->add(new \Etc\Hosts\DeleteCommand());
         $this->add(new \Symfony\v1\CreateProjectCommand());
         $this->add(new \Svn\AddCommand());
+        $this->add(new \Svn\CheckExternalsCommand());
     }
 
 }

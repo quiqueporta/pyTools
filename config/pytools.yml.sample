@@ -6,6 +6,8 @@ ssh:
 
 svn:
   repository_url:
+  repository_dir: /var/lib/svn
+  externals-ignore: [ apps, lib, web, svn, cache, log, data, fixtures, config, test, app, cake, doc, nbproject, stats, vendors]
 
 symfony_1:
-  base_project: 
+  base_project: base_project 
