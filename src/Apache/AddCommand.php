@@ -27,7 +27,7 @@ class AddCommand extends Command {
         $ServerName = $input->getArgument('ServerName');
 
         if (!$DocumentRoot = $input->getOption('DocumentRoot')){
-            $DocumentRoot = $this->getDialog()->ask($output, sprintf('<question>DocumentRoot (defecto: %s)</question> ',getcwd()), getcwd());
+            $DocumentRoot = $this->getDialog()->ask($output, sprintf('<question>DocumentRoot (defecto: %s)</question> ',getcwd().'/web'), getcwd().'/web');
         }
 
         if (!$DirectoryIndex = $input->getOption('DirectoryIndex')){
