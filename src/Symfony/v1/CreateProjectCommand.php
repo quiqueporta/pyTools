@@ -79,6 +79,12 @@ class CreateProjectCommand extends Command {
         $process = new Process(sprintf('./symfony plugin:publish-assets', $ProjectName));
         $process->run();
 
+        if ($this->getDialog()->askConfirmation($output, '<question>¿Quieres crear la base de datos mediante "build --all"? (defecto: y)</question> ', true)){
+            $output->writeln("<comment>* Creando los modelos y la base de datos ...</comment>");
+            $process = new Process('./symfony doctrine:build --all --and-load --no-confirmation');
+            $process->run();
+        }
+
         $output->writeln('<comment>* Limpiando la cache ...</comment>');
         $process = new Process(sprintf('./symfony cc', $ProjectName));
         $process->run();
@@ -86,6 +92,7 @@ class CreateProjectCommand extends Command {
         $output->writeln('<comment>* Estableciendo permisos ...</comment>');
         $process = new Process(sprintf('./symfony project:permissions', $ProjectName));
         $process->run();
+
     }
 
     protected function getDialog() {
